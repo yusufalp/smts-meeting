@@ -66,10 +66,7 @@ export const getMeetingById = async (req, res, next) => {
       throw new CustomError("Meeting id is required", 400);
     }
 
-    const meeting = await Meeting.findById(meetingId)
-      .populate("learnerId", "name")
-      .populate("advisorId", "name")
-      .lean();
+    const meeting = await Meeting.findById(meetingId).lean();
 
     if (!meeting) {
       throw new CustomError("Meeting not found", 404);
