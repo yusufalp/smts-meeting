@@ -2,26 +2,23 @@ import Meeting from "../models/meetingModel.js";
 import CustomError from "../utils/CustomError.js";
 
 export const createMeeting = async (req, res, next) => {
-  const { title, advisorId, learnerId, date, time, duration, notes } = req.body;
-  const userId = req.user._id;
+  const { title, advisor, learner, date, time, duration, notes } = req.body;
 
   const dateISO = new Date(`${date} ${time}`);
 
   // TODO: add more validations here
 
   try {
-    if (!userId) {
-      throw new CustomError("User id is required", 400);
-    }
-
     const newMeeting = new Meeting({
       title,
-      learnerId,
-      advisorId,
+      learnerId: learner,
+      advisorId: advisor,
       scheduledDate: dateISO,
-      durationMinutes,
+      durationMinutes: duration,
       notes,
     });
+
+    console.log("newMeeting :>> ", newMeeting);
 
     await newMeeting.save();
 
@@ -37,28 +34,20 @@ export const createMeeting = async (req, res, next) => {
 export const deleteMeeting = () => {};
 
 export const getAllMeetings = async (req, res, next) => {
-  const userId = req.user._id;
   const { role, profileId } = req.query;
 
   try {
-    if (!userId) {
-      throw new CustomError("User id is required", 400);
-    }
-
     const filter = {
-      mentor: { advisor: profileId },
-      coach: { advisor: profileId },
-      mentee: { learner: profileId },
+      mentor: { advisorId: profileId },
+      coach: { advisorId: profileId },
+      mentee: { learnerId: profileId },
     };
 
     if (!filter[role]) {
       throw new CustomError(`Invalid role: ${role}`, 400);
     }
 
-    const meetings = await Meeting.find(filter[role])
-      .populate("learner", "name")
-      .populate("advisor", "name")
-      .lean();
+    const meetings = await Meeting.find(filter[role]).lean();
 
     return res.status(200).json({
       success: { message: "Meetings found" },
