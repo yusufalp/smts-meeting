@@ -7,6 +7,7 @@ import cors from "cors";
 
 import connectDB from "./config/database.js";
 
+import adminRoutes from "./routes/adminRoutes.js";
 import meetingRoutes from "./routes/meetingRoutes.js";
 
 import { authenticateToken } from "./middlewares/authenticateToken.js";
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(authenticateToken);
 
+app.use("/api/admin", adminRoutes);
 app.use("/api/meetings", meetingRoutes);
 
 app.get("/", (req, res, next) => {
@@ -52,5 +54,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3003;
 
 app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}. `);
-  });
+  console.log(`Server is listening on port ${PORT}. `);
+});
