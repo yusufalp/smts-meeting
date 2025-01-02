@@ -1,12 +1,12 @@
 import express from "express";
 
-import { authorizeAdmin } from "../middlewares/authorizeRoles.js";
+import authenticateAdmin from "../middlewares/authenticateAdmin.js";
 
 import { getAllMeetingsByAdmin } from "../controllers/adminController.js";
 
 const router = express.Router();
 
-router.use(authorizeAdmin);
+router.use(authenticateAdmin);
 
 router.get("/meetings", getAllMeetingsByAdmin);
 
