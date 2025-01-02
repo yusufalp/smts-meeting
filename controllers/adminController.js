@@ -1,12 +1,20 @@
 import Meeting from "../models/meetingModel.js";
 
 export const getAllMeetingsByAdmin = async (req, res, next) => {
-  const { date, page = 1, limit = 5 } = req.query;
+  const { title, date, organizer, page = 1, limit = 5 } = req.query;
 
   const filters = {};
 
+  if (title) {
+    filters.title = { $regex: title, $options: "i" };
+  }
+
   if (date) {
     filters.date = date;
+  }
+
+  if (organizer) {
+    filters["organizer.name.firstName"] = { $regex: organizer, $options: "i" };
   }
 
   const pageNum = Math.max(parseInt(page, 10) || 1, 1);
