@@ -2,7 +2,8 @@ import Meeting from "../models/meetingModel.js";
 import CustomError from "../utils/CustomError.js";
 
 export const createMeeting = async (req, res, next) => {
-  const { title, advisor, learner, date, time, duration, notes } = req.body;
+  const { title, organizer, advisor, date, time, duration, description } =
+    req.body;
 
   const dateISO = new Date(`${date} ${time}`);
 
@@ -11,11 +12,11 @@ export const createMeeting = async (req, res, next) => {
   try {
     const newMeeting = new Meeting({
       title,
-      learnerId: learner,
-      advisorId: advisor,
-      scheduledDate: dateISO,
+      organizer,
+      participants: [advisor],
+      scheduledAt: dateISO,
       durationMinutes: duration,
-      notes,
+      description,
     });
 
     console.log("newMeeting :>> ", newMeeting);
@@ -38,9 +39,7 @@ export const getAllMeetings = async (req, res, next) => {
 
   try {
     const filter = {
-      mentor: { advisorId: profileId },
-      coach: { advisorId: profileId },
-      mentee: { learnerId: profileId },
+      mentee: { "organizer.profileId": profileId },
     };
 
     if (!filter[role]) {
@@ -59,14 +58,14 @@ export const getAllMeetings = async (req, res, next) => {
 };
 
 export const getMeetingById = async (req, res, next) => {
-  const { meetingId } = req.params;
+  const { _id } = req.params;
 
   try {
-    if (!meetingId) {
+    if (!_id) {
       throw new CustomError("Meeting id is required", 400);
     }
 
-    const meeting = await Meeting.findById(meetingId).lean();
+    const meeting = await Meeting.findById(_id).lean();
 
     if (!meeting) {
       throw new CustomError("Meeting not found", 404);

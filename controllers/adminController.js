@@ -1,21 +1,9 @@
 import Meeting from "../models/meetingModel.js";
 
 export const getAllMeetingsByAdmin = async (req, res, next) => {
-  const { title, learner, advisor, date, page = 1, limit = 5 } = req.query;
+  const { date, page = 1, limit = 5 } = req.query;
 
   const filters = {};
-
-  if (title) {
-    filters.title = title;
-  }
-
-  if (learner) {
-    filters.learner = learner;
-  }
-
-  if (advisor) {
-    filters.advisor = advisor;
-  }
 
   if (date) {
     filters.date = date;
@@ -28,8 +16,6 @@ export const getAllMeetingsByAdmin = async (req, res, next) => {
     const meetings = await Meeting.find(filters)
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize)
-      .populate("learner", "name")
-      .populate("advisor", "name")
       .lean();
 
     if (!meetings) {
