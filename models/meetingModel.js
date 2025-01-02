@@ -3,11 +3,30 @@ import { Schema, model } from "mongoose";
 const meetingSchema = new Schema(
   {
     title: { type: String, required: true },
-    learnerId: { type: Schema.Types.ObjectId, ref: "Profile", required: true },
-    advisorId: { type: Schema.Types.ObjectId, ref: "Profile", required: true },
-    scheduledDate: { type: Date, required: true },
+    organizer: {
+      profileId: { type: Schema.Types.ObjectId },
+      email: { type: String },
+      name: {
+        firstName: { type: String },
+        lastName: { type: String },
+      },
+    },
+    participants: [
+      {
+        profileId: { type: Schema.Types.ObjectId },
+        email: { type: String },
+        name: {
+          firstName: { type: String },
+          lastName: { type: String },
+        },
+      },
+    ],
+    scheduledAt: { type: Date, required: true },
     durationMinutes: { type: Number, required: true },
-    notes: { type: String },
+    // * scheduled, cancelled, completed
+    meetingStatus: { type: String, default: "scheduled" },
+    summary: { type: String },
+    description: { type: String },
   },
   { timestamps: true }
 );
