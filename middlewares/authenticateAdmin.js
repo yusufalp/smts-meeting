@@ -6,12 +6,10 @@ const PROFILES_SERVICE_URL = process.env.PROFILES_SERVICE_URL;
 async function authenticateAdmin(req, res, next) {
   const token = req.get("Authorization")?.split(" ")[1];
 
-  if (!token) {
-    throw new Error("Token is missing");
-  }
-
   try {
-    const decoded = decodeJwtToken(token);
+    if (!token) {
+      throw new CustomError("Token is missing", 401);
+    }
 
     const response = await fetch(
       `${PROFILES_SERVICE_URL}/api/profiles/profile`,
@@ -30,6 +28,10 @@ async function authenticateAdmin(req, res, next) {
     }
 
     const profileResult = await response.json();
+
+    if (profileResult.error) {
+      throw new CustomError(profileResult.error.message, 400);
+    }
 
     const { profile } = profileResult.data;
 
