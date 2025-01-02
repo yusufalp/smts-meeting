@@ -1,5 +1,4 @@
 import CustomError from "../utils/CustomError.js";
-import { decodeJwtToken } from "../utils/token.js";
 
 const PROFILES_SERVICE_URL = process.env.PROFILES_SERVICE_URL;
 
