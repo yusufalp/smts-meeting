@@ -10,7 +10,14 @@ export const getAllMeetingsByAdmin = async (req, res, next) => {
   }
 
   if (date) {
-    filters.date = date;
+    const timeZoneOffset = new Date(date).getTimezoneOffset() / 60;
+    
+    const startDate = new Date(
+      new Date(date).setUTCHours(0, 0, 0, 0) + timeZoneOffset * 60 * 60 * 1000
+    );
+    const endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
+
+    filters.scheduledAt = { $gte: startDate, $lte: endDate };
   }
 
   if (organizer) {
