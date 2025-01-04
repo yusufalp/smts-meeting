@@ -1,6 +1,6 @@
 import Meeting from "../models/meetingModel.js";
 
-export const getAllMeetingsByAdmin = async (req, res, next) => {
+export const getAllMeetings = async (req, res, next) => {
   const { title, date, organizer, page = 1, limit = 5 } = req.query;
 
   const filters = {};

@@ -3,8 +3,8 @@ import express from "express";
 import {
   createMeeting,
   deleteMeeting,
-  getAllMeetings,
   getMeetingById,
+  getMeetings,
   updateMeeting,
 } from "../controllers/meetingController.js";
 
@@ -20,7 +20,7 @@ router.delete("/meetings/:id", deleteMeeting);
 
 // GET /api/meetings
 // Retrieves all meetings.
-router.get("/", getAllMeetings);
+router.get("/", getMeetings);
 
 // GET /api/meetings/:id
 // Retrieve details for a specific meeting.

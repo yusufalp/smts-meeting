@@ -34,29 +34,6 @@ export const createMeeting = async (req, res, next) => {
 
 export const deleteMeeting = () => {};
 
-export const getAllMeetings = async (req, res, next) => {
-  const { role, profileId } = req.query;
-
-  try {
-    const filter = {
-      mentee: { "organizer.profileId": profileId },
-    };
-
-    if (!filter[role]) {
-      throw new CustomError(`Invalid role: ${role}`, 400);
-    }
-
-    const meetings = await Meeting.find(filter[role]).lean();
-
-    return res.status(200).json({
-      success: { message: "Meetings found" },
-      data: { meetings },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const getMeetingById = async (req, res, next) => {
   const { _id } = req.params;
 
@@ -74,6 +51,29 @@ export const getMeetingById = async (req, res, next) => {
     return res.status(200).json({
       success: { message: "Meeting is found" },
       data: { meeting },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMeetings = async (req, res, next) => {
+  const { role, profileId } = req.query;
+
+  try {
+    const filter = {
+      mentee: { "organizer.profileId": profileId },
+    };
+
+    if (!filter[role]) {
+      throw new CustomError(`Invalid role: ${role}`, 400);
+    }
+
+    const meetings = await Meeting.find(filter[role]).lean();
+
+    return res.status(200).json({
+      success: { message: "Meetings found" },
+      data: { meetings },
     });
   } catch (error) {
     next(error);
