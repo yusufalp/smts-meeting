@@ -4,7 +4,7 @@ const meetingSchema = new Schema(
   {
     title: { type: String, required: true },
     organizer: {
-      profileId: { type: Schema.Types.ObjectId },
+      profileId: { type: String },
       email: { type: String },
       name: {
         firstName: { type: String },
@@ -13,7 +13,7 @@ const meetingSchema = new Schema(
     },
     participants: [
       {
-        profileId: { type: Schema.Types.ObjectId },
+        profileId: { type: String },
         email: { type: String },
         name: {
           firstName: { type: String },
