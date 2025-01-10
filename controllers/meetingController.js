@@ -19,8 +19,6 @@ export const createMeeting = async (req, res, next) => {
       description,
     });
 
-    console.log("newMeeting :>> ", newMeeting);
-
     await newMeeting.save();
 
     return res.status(201).json({
@@ -58,18 +56,19 @@ export const getMeetingById = async (req, res, next) => {
 };
 
 export const getMeetings = async (req, res, next) => {
-  const { role, profileId } = req.query;
+  const { profileId } = req.query;
 
   try {
-    const filter = {
-      mentee: { "organizer.profileId": profileId },
-    };
-
-    if (!filter[role]) {
-      throw new CustomError(`Invalid role: ${role}`, 400);
+    if (!profileId) {
+      throw new CustomError("Profile id is required", 400);
     }
 
-    const meetings = await Meeting.find(filter[role]).lean();
+    const meetings = await Meeting.find({
+      $or: [
+        { "organizer.profileId": profileId },
+        { "participants.profileId": profileId },
+      ],
+    }).lean();
 
     return res.status(200).json({
       success: { message: "Meetings found" },
