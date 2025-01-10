@@ -56,23 +56,41 @@ export const getMeetingById = async (req, res, next) => {
 };
 
 export const getMeetings = async (req, res, next) => {
-  const { profileId } = req.query;
+  const { profileId, page = 1, limit = 5 } = req.query;
+
+  const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+  const pageSize = Math.min(Math.max(parseInt(limit, 10) || 5, 1), 100);
+
+  const filters = {
+    $or: [
+      { "organizer.profileId": profileId },
+      { "participants.profileId": profileId },
+    ],
+  };
 
   try {
     if (!profileId) {
       throw new CustomError("Profile id is required", 400);
     }
 
-    const meetings = await Meeting.find({
-      $or: [
-        { "organizer.profileId": profileId },
-        { "participants.profileId": profileId },
-      ],
-    }).lean();
+    const meetings = await Meeting.find(filters)
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize)
+      .lean();
+
+    const totalCount = await Meeting.countDocuments(filters);
 
     return res.status(200).json({
       success: { message: "Meetings found" },
-      data: { meetings },
+      data: {
+        meetings,
+        pagination: {
+          totalCount,
+          totalPages: Math.ceil(totalCount / pageSize),
+          currentPage: pageNum,
+          pageSize,
+        },
+      },
     });
   } catch (error) {
     next(error);
